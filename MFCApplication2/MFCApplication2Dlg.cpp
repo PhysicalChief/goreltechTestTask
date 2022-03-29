@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CMFCApplication2Dlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CMFCApplication2Dlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDCLEAR, &CMFCApplication2Dlg::OnBnClickedClear)
+	ON_BN_CLICKED(IDC_BUTTON1, &CMFCApplication2Dlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -174,13 +175,25 @@ void CMFCApplication2Dlg::OnBnClickedOk()
 	// TODO: добавьте свой код обработчика уведомлений
 
 	Add_El_Tree_Dialog addElementDialog;
+	addElementDialog.idNew = getNextID() - 1;
 	if (addElementDialog.DoModal() == 901) {
 		int id = addElementDialog.idNew;
 		CString cap = addElementDialog.captionNew;
 		CString info = addElementDialog.infoNew;
 		int p = addElementDialog.pidNew;
 		treeElement newElement(id, cap, info, p);
-
+		if (id < 0) {
+			ErrorDialog error;
+			error.errorMessage = L"ID must be more or equal 0";
+			error.DoModal();
+			return;
+		}
+		if (p < -1) {
+			ErrorDialog error;
+			error.errorMessage = L"Parent ID must be more or equal -1";
+			error.DoModal();
+			return;
+		}
 		try {
 			treeElement parent = structTree.at(p);
 		}
@@ -201,7 +214,8 @@ void CMFCApplication2Dlg::OnBnClickedOk()
 			HTREEITEM tmp = m_tree.InsertItem(newElement.getName(), structTree[p].GetTreeCtrlElement());
 			newElement.SetTreeCtrlElement(tmp);
 			structTree[id] = newElement;
-			m_tree.UpdateData();
+			//m_tree.UpdateData();
+			m_tree.UpdateWindow();
 		}
 	}
 
@@ -225,4 +239,63 @@ void CMFCApplication2Dlg::OnBnClickedClear()
 	treeElement rootElement(id, CString("root"), CString("root"), id);
 	rootElement.SetTreeCtrlElement(TVI_ROOT);
 	structTree[id] = rootElement;
+}
+
+int CMFCApplication2Dlg::getNextID()
+{
+	return structTree.size();
+}
+
+
+void CMFCApplication2Dlg::OnBnClickedButton1()
+{
+	m_tree.DeleteAllItems();
+	structTree.clear();
+	int id = -1;
+	treeElement rootElement(id, CString("root"), CString("root"), id);
+	rootElement.SetTreeCtrlElement(TVI_ROOT);
+	structTree[id] = rootElement;
+
+	CFileDialog fileDialog(TRUE);
+	fileDialog.m_ofn.Flags |= OFN_FILEMUSTEXIST;
+	fileDialog.m_ofn.lpstrInitialDir = NULL;
+	int result = fileDialog.DoModal();	
+	if (result == IDOK)	//если файл выбран
+	{
+		CStdioFile fileStream;
+		CString fileName = fileDialog.m_ofn.lpstrFile;
+		fileStream.Open(fileName, CFile::modeRead | CFile::shareExclusive | CFile::typeText);
+		CString readStr;
+		while (fileStream.ReadString(readStr)) {
+			int id, pid;
+			CString caption, info;
+			
+			int n = 0;
+			int m = 0;
+
+			n = readStr.Find(';', n);
+			CString tmp = readStr.Left(n);
+			id = _wtoi(tmp);
+			m = n + 1;
+
+			n = readStr.Find(';', n + 1);
+			caption = readStr.Mid(m, n - m);
+			m = n + 1;
+
+			n = readStr.Find(';', n + 1);
+			info = readStr.Mid(m, n - m);
+			m = n + 1;
+
+			tmp = readStr.Right(readStr.GetLength() - n - 1);
+			pid = _wtoi(tmp);
+
+			treeElement newEl(id, caption, info, pid);
+
+			HTREEITEM tmp1 = m_tree.InsertItem(newEl.getName(), structTree[pid].GetTreeCtrlElement());
+			newEl.SetTreeCtrlElement(tmp1);
+			structTree[id] = newEl;
+		}
+		m_tree.UpdateWindow();
+		fileStream.Close();
+	}
 }

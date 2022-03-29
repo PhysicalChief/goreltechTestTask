@@ -16,7 +16,7 @@ Add_El_Tree_Dialog::Add_El_Tree_Dialog(CWnd* pParent /*=nullptr*/)
 	, idNew(0)
 	, captionNew(_T(""))
 	, infoNew(_T(""))
-	, pidNew(0)
+	, pidNew(-1)
 {
 
 }
@@ -29,11 +29,9 @@ void Add_El_Tree_Dialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT1, idNew);
-	DDV_MinMaxInt(pDX, idNew, 1, 99999);
 	DDX_Text(pDX, IDC_EDIT2, captionNew);
 	DDX_Text(pDX, IDC_EDIT3, infoNew);
 	DDX_Text(pDX, IDC_EDIT4, pidNew);
-	DDV_MinMaxInt(pDX, pidNew, -1, 99999);
 }
 
 
@@ -49,6 +47,7 @@ END_MESSAGE_MAP()
 void Add_El_Tree_Dialog::OnBnClickedCancelbutton()
 {
 	// TODO: добавьте свой код обработчика уведомлений
+	CDialogEx::OnCancel();
 }
 
 

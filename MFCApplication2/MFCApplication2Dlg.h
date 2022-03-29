@@ -6,6 +6,7 @@
 #include <cstring>
 #include <unordered_map>
 #include <stdexcept>
+#include <filesystem>
 #include "treeElement.h"
 
 // Диалоговое окно CMFCApplication2Dlg
@@ -37,9 +38,12 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedClear();
 	CTreeCtrl m_tree;
+	int getNextID();
 private:
 	std::unordered_map<int, treeElement> structTree;
+	void loadFromFile();
 public:
-	afx_msg void OnBnClickedClear();
+	afx_msg void OnBnClickedButton1();
 };
