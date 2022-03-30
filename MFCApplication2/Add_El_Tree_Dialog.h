@@ -28,4 +28,6 @@ public:
 	int pidNew;
 	afx_msg void OnBnClickedCancelbutton();
 	afx_msg void OnBnClickedOkbutton();
+	CEdit idCtrl;
+	CEdit pidCtrl;
 };

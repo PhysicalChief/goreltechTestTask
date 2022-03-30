@@ -43,7 +43,9 @@ public:
 	int getNextID();
 private:
 	std::unordered_map<int, treeElement> structTree;
+	std::unordered_map<HTREEITEM, int> elementToId;
 	void loadFromFile();
 public:
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnNMDblclkTree1(NMHDR* pNMHDR, LRESULT* pResult);
 };

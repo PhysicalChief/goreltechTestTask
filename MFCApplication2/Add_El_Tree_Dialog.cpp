@@ -32,6 +32,8 @@ void Add_El_Tree_Dialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT2, captionNew);
 	DDX_Text(pDX, IDC_EDIT3, infoNew);
 	DDX_Text(pDX, IDC_EDIT4, pidNew);
+	DDX_Control(pDX, IDC_EDIT1, idCtrl);
+	DDX_Control(pDX, IDC_EDIT4, pidCtrl);
 }
 
 

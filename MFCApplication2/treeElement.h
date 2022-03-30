@@ -19,5 +19,10 @@ public:
 	void SetTreeCtrlElement(HTREEITEM treeCtrlElement);
 	HTREEITEM GetTreeCtrlElement();
 	CString getName();
+	void setName(CString name);
+	int getId();
+	void setInfo(CString info);
+	CString getInfo();
+	int getPid();
 };
 

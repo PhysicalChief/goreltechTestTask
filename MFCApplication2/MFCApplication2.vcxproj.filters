@@ -78,4 +78,7 @@
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Новый текстовый документ.txt" />
+  </ItemGroup>
 </Project>

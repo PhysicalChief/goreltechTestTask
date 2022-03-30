@@ -74,6 +74,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CMFCApplication2Dlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDCLEAR, &CMFCApplication2Dlg::OnBnClickedClear)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCApplication2Dlg::OnBnClickedButton1)
+	ON_NOTIFY(NM_DBLCLK, IDC_TREE1, &CMFCApplication2Dlg::OnNMDblclkTree1)
 END_MESSAGE_MAP()
 
 
@@ -114,6 +115,7 @@ BOOL CMFCApplication2Dlg::OnInitDialog()
 	rootElement.SetTreeCtrlElement(TVI_ROOT);
 
 	structTree[id] = rootElement;
+	elementToId[TVI_ROOT] = -1;
 
 	return TRUE;  // возврат значения TRUE, если фокус не передан элементу управления
 }
@@ -214,6 +216,7 @@ void CMFCApplication2Dlg::OnBnClickedOk()
 			HTREEITEM tmp = m_tree.InsertItem(newElement.getName(), structTree[p].GetTreeCtrlElement());
 			newElement.SetTreeCtrlElement(tmp);
 			structTree[id] = newElement;
+			elementToId[tmp] = id;
 			//m_tree.UpdateData();
 			m_tree.UpdateWindow();
 		}
@@ -273,6 +276,8 @@ void CMFCApplication2Dlg::OnBnClickedButton1()
 			int n = 0;
 			int m = 0;
 
+			readStr.TrimLeft();
+
 			n = readStr.Find(';', n);
 			CString tmp = readStr.Left(n);
 			id = _wtoi(tmp);
@@ -294,8 +299,41 @@ void CMFCApplication2Dlg::OnBnClickedButton1()
 			HTREEITEM tmp1 = m_tree.InsertItem(newEl.getName(), structTree[pid].GetTreeCtrlElement());
 			newEl.SetTreeCtrlElement(tmp1);
 			structTree[id] = newEl;
+			elementToId[tmp1] = id;
 		}
 		m_tree.UpdateWindow();
 		fileStream.Close();
 	}
+}
+
+
+void CMFCApplication2Dlg::OnNMDblclkTree1(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	HTREEITEM currelement = m_tree.GetSelectedItem();
+	int currentId = elementToId[currelement];
+
+	Add_El_Tree_Dialog addElementDialog;
+	treeElement el = structTree[currentId];
+
+	addElementDialog.idNew = el.getId();
+	addElementDialog.captionNew = el.getName();
+	addElementDialog.infoNew = el.getInfo();
+	addElementDialog.pidNew = el.getPid();
+
+	int result = addElementDialog.DoModal();
+
+	switch (result)
+	{
+	case 901:
+		el.setInfo(addElementDialog.infoNew);
+		el.setName(addElementDialog.captionNew);
+		m_tree.SetItemText(currelement, addElementDialog.captionNew);
+		structTree[currentId] = el;
+		break;
+	default:
+		break;
+	}
+
+	// TODO: добавьте свой код обработчика уведомлений
+	*pResult = 0;
 }
